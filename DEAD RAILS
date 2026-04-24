@@ -1,0 +1,411 @@
+-- Tornado Hub for Dead Rails (Xeno Executor)
+-- Chỉ lấy giao diện phong cách Redz Hub, nội dung tính năng là dành cho Dead Rails
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+-- Tạo GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TornadoHub"
+screenGui.ResetOnSpawn = false
+if syn and syn.protect_gui then syn.protect_gui(screenGui) end
+if gethui then screenGui.Parent = gethui() else screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
+
+-- ========== NÚT THU NHỎ HÌNH TRÒN LỐC XOÁY ==========
+local minimizeButton = Instance.new("ImageButton")
+minimizeButton.Name = "MinimizeButton"
+minimizeButton.Size = UDim2.new(0, 55, 0, 55)
+minimizeButton.Position = UDim2.new(0, 15, 0, 100)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+minimizeButton.BackgroundTransparency = 0.15
+minimizeButton.BorderSizePixel = 0
+minimizeButton.Image = "rbxassetid://6031094832"
+minimizeButton.ImageColor3 = Color3.fromRGB(255, 180, 60)
+minimizeButton.ScaleType = Enum.ScaleType.Fit
+minimizeButton.Visible = false
+minimizeButton.Parent = screenGui
+
+local minimizeCorner = Instance.new("UICorner", minimizeButton)
+minimizeCorner.CornerRadius = UDim.new(1, 0)
+
+-- ========== FRAME CHÍNH (PHONG CÁCH REDZ HUB) ==========
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 420, 0, 480)
+mainFrame.Position = UDim2.new(0.5, -210, 0.5, -240)
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+mainFrame.BackgroundTransparency = 0.08
+mainFrame.BorderSizePixel = 0
+mainFrame.ClipsDescendants = true
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner", mainFrame)
+mainCorner.CornerRadius = UDim.new(0, 14)
+
+-- Thanh tiêu đề
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 45)
+titleBar.BackgroundColor3 = Color3.fromRGB(30, 28, 45)
+titleBar.BackgroundTransparency = 0.3
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner", titleBar)
+titleCorner.CornerRadius = UDim.new(0, 14)
+
+local titleText = Instance.new("TextLabel")
+titleText.Size = UDim2.new(1, -60, 1, 0)
+titleText.Position = UDim2.new(0, 15, 0, 0)
+titleText.BackgroundTransparency = 1
+titleText.Text = "🌀 TORNADO HUB | DEAD RAILS"
+titleText.TextColor3 = Color3.fromRGB(255, 200, 80)
+titleText.TextSize = 20
+titleText.Font = Enum.Font.GothamBold
+titleText.TextXAlignment = Enum.TextXAlignment.Left
+titleText.Parent = titleBar
+
+-- Nút đóng (thu nhỏ)
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 35, 0, 35)
+closeBtn.Position = UDim2.new(1, -45, 0, 5)
+closeBtn.BackgroundTransparency = 1
+closeBtn.Text = "−"
+closeBtn.TextColor3 = Color3.fromRGB(255, 120, 80)
+closeBtn.TextSize = 28
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Parent = titleBar
+
+-- ========== CÂU CHÀO MỪNG ==========
+local welcomeLabel = Instance.new("TextLabel")
+welcomeLabel.Size = UDim2.new(1, -20, 0, 35)
+welcomeLabel.Position = UDim2.new(0, 10, 0, 52)
+welcomeLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
+welcomeLabel.BackgroundTransparency = 0.5
+welcomeLabel.Text = "✨ Welcome, " .. LocalPlayer.Name .. "! ✨"
+welcomeLabel.TextColor3 = Color3.fromRGB(180, 210, 255)
+welcomeLabel.TextSize = 14
+welcomeLabel.Font = Enum.Font.GothamSemibold
+welcomeLabel.TextWrapped = true
+welcomeLabel.Parent = mainFrame
+local welcomeCorner = Instance.new("UICorner", welcomeLabel)
+welcomeCorner.CornerRadius = UDim.new(0, 8)
+
+-- ========== SCROLLING FRAME ==========
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, -20, 1, -105)
+scrollFrame.Position = UDim2.new(0, 10, 0, 95)
+scrollFrame.BackgroundTransparency = 1
+scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollFrame.ScrollBarThickness = 5
+scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(200, 150, 70)
+scrollFrame.Parent = mainFrame
+
+local uiList = Instance.new("UIListLayout")
+uiList.Padding = UDim.new(0, 6)
+uiList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.Parent = scrollFrame
+
+-- Helper: Tạo section
+local function addSection(title)
+    local section = Instance.new("TextLabel")
+    section.Size = UDim2.new(1, -10, 0, 28)
+    section.BackgroundColor3 = Color3.fromRGB(50, 45, 70)
+    section.BackgroundTransparency = 0.6
+    section.Text = "  「 " .. title .. " 」"
+    section.TextColor3 = Color3.fromRGB(255, 190, 100)
+    section.TextSize = 15
+    section.Font = Enum.Font.GothamBold
+    section.TextXAlignment = Enum.TextXAlignment.Left
+    section.Parent = scrollFrame
+    local sectionCorner = Instance.new("UICorner", section)
+    sectionCorner.CornerRadius = UDim.new(0, 6)
+end
+
+-- Helper: Toggle
+local function addToggle(text, callback)
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Size = UDim2.new(1, 0, 0, 36)
+    toggleFrame.BackgroundTransparency = 1
+    toggleFrame.Parent = scrollFrame
+    
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 32, 0, 32)
+    btn.Position = UDim2.new(0, 8, 0, 2)
+    btn.BackgroundColor3 = Color3.fromRGB(65, 60, 85)
+    btn.Text = ""
+    btn.AutoButtonColor = true
+    btn.Parent = toggleFrame
+    local btnCorner = Instance.new("UICorner", btn)
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    
+    local checkIcon = Instance.new("TextLabel")
+    checkIcon.Size = UDim2.new(1, 0, 1, 0)
+    checkIcon.BackgroundTransparency = 1
+    checkIcon.Text = "✓"
+    checkIcon.TextColor3 = Color3.fromRGB(100, 255, 130)
+    checkIcon.TextSize = 22
+    checkIcon.Visible = false
+    checkIcon.Parent = btn
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -55, 1, 0)
+    label.Position = UDim2.new(0, 48, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(220, 220, 245)
+    label.TextSize = 14
+    label.Font = Enum.Font.Gotham
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = toggleFrame
+    
+    local state = false
+    btn.MouseButton1Click:Connect(function()
+        state = not state
+        checkIcon.Visible = state
+        if callback then callback(state) end
+    end)
+end
+
+-- Helper: Slider
+local function addSlider(text, minVal, maxVal, defaultVal, callback)
+    local sliderFrame = Instance.new("Frame")
+    sliderFrame.Size = UDim2.new(1, 0, 0, 70)
+    sliderFrame.BackgroundTransparency = 1
+    sliderFrame.Parent = scrollFrame
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0, 22)
+    label.BackgroundTransparency = 1
+    label.Text = text .. ": " .. tostring(defaultVal)
+    label.TextColor3 = Color3.fromRGB(210, 210, 250)
+    label.TextSize = 13
+    label.Font = Enum.Font.Gotham
+    label.Parent = sliderFrame
+    
+    local sliderBg = Instance.new("Frame")
+    sliderBg.Size = UDim2.new(1, -20, 0, 6)
+    sliderBg.Position = UDim2.new(0, 10, 0, 38)
+    sliderBg.BackgroundColor3 = Color3.fromRGB(55, 55, 75)
+    sliderBg.BorderSizePixel = 0
+    sliderBg.Parent = sliderFrame
+    local sliderCorner = Instance.new("UICorner", sliderBg)
+    sliderCorner.CornerRadius = UDim.new(1, 0)
+    
+    local fill = Instance.new("Frame")
+    fill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(255, 160, 70)
+    fill.BorderSizePixel = 0
+    fill.Parent = sliderBg
+    local fillCorner = Instance.new("UICorner", fill)
+    fillCorner.CornerRadius = UDim.new(1, 0)
+    
+    local grab = Instance.new("TextButton")
+    grab.Size = UDim2.new(0, 18, 0, 18)
+    grab.Position = UDim2.new((defaultVal - minVal) / (maxVal - minVal), -9, 0, -6)
+    grab.BackgroundColor3 = Color3.fromRGB(255, 200, 100)
+    grab.Text = ""
+    grab.Parent = sliderBg
+    local grabCorner = Instance.new("UICorner", grab)
+    grabCorner.CornerRadius = UDim.new(1, 0)
+    
+    local value = defaultVal
+    local dragging = false
+    grab.MouseButton1Down:Connect(function() dragging = true end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+    end)
+    grab.MouseMoved:Connect(function()
+        if dragging then
+            local mousePos = Mouse.X
+            local sliderPos = sliderBg.AbsolutePosition.X
+            local width = sliderBg.AbsoluteSize.X
+            local percent = math.clamp((mousePos - sliderPos) / width, 0, 1)
+            local newVal = minVal + (maxVal - minVal) * percent
+            value = math.floor(newVal)
+            fill.Size = UDim2.new(percent, 0, 1, 0)
+            grab.Position = UDim2.new(percent, -9, 0, -6)
+            label.Text = text .. ": " .. tostring(value)
+            if callback then callback(value) end
+        end
+    end)
+end
+
+-- ========== TÍNH NĂNG DEAD RAILS ==========
+local settings = {
+    esp = false,
+    monsterDetect = false,
+    bringItems = false,
+    autoBonds = false,
+    autoMoney = false,
+    walkSpeed = 16
+}
+
+local espInstances = {}
+
+local function clearESP()
+    for _, v in pairs(espInstances) do
+        if v and v.Parent then v:Destroy() end
+    end
+    espInstances = {}
+    for _, v in pairs(Workspace:GetDescendants()) do
+        if v.Name == "ESP_Tornado" then v:Destroy() end
+    end
+end
+
+local function updateESP()
+    clearESP()
+    if not settings.esp then return end
+    task.spawn(function()
+        while settings.esp and task.wait(0.3) do
+            for _, model in pairs(Workspace:GetDescendants()) do
+                if model:IsA("Model") and model:FindFirstChild("Humanoid") and model ~= LocalPlayer.Character then
+                    if not model:FindFirstChild("ESP_Tornado") then
+                        local bill = Instance.new("BillboardGui")
+                        bill.Name = "ESP_Tornado"
+                        bill.Size = UDim2.new(0, 200, 0, 40)
+                        bill.Adornee = model
+                        bill.AlwaysOnTop = true
+                        bill.Parent = model
+                        table.insert(espInstances, bill)
+                        
+                        local nameTag = Instance.new("TextLabel", bill)
+                        nameTag.Size = UDim2.new(1, 0, 1, 0)
+                        nameTag.BackgroundTransparency = 1
+                        nameTag.Text = model.Name
+                        nameTag.TextColor3 = Color3.fromRGB(255, 100, 100)
+                        nameTag.TextStrokeTransparency = 0.2
+                        nameTag.TextScaled = true
+                    end
+                end
+            end
+        end
+    end)
+end
+
+local function monsterDetectLoop()
+    task.spawn(function()
+        while settings.monsterDetect and task.wait(1) do
+            local nearestDist = math.huge
+            local nearestName = ""
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local charPos = LocalPlayer.Character.HumanoidRootPart.Position
+                for _, model in pairs(Workspace:GetDescendants()) do
+                    if model:IsA("Model") and model:FindFirstChild("Humanoid") and model ~= LocalPlayer.Character then
+                        local part = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Head")
+                        if part then
+                            local dist = (part.Position - charPos).Magnitude
+                            if dist < nearestDist and dist < 50 then
+                                nearestDist = dist
+                                nearestName = model.Name
+                            end
+                        end
+                    end
+                end
+            end
+            if nearestDist < 30 then
+                welcomeLabel.Text = "⚠️ MONSTER: " .. nearestName .. " (" .. math.floor(nearestDist) .. "m) ⚠️"
+                welcomeLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+            else
+                welcomeLabel.Text = "✨ Welcome, " .. LocalPlayer.Name .. "! ✨"
+                welcomeLabel.TextColor3 = Color3.fromRGB(180, 210, 255)
+            end
+        end
+    end)
+end
+
+local function autoCollectLoop()
+    task.spawn(function()
+        while task.wait(0.5) do
+            if settings.autoBonds or settings.autoMoney then
+                for _, obj in pairs(Workspace:GetDescendants()) do
+                    if obj:IsA("BasePart") or (obj:IsA("Model") and obj.PrimaryPart) then
+                        local nameLow = string.lower(obj.Name)
+                        local shouldCollect = false
+                        if settings.autoBonds and (nameLow:find("bond") or nameLow:find("token") or nameLow:find("coin")) then
+                            shouldCollect = true
+                        end
+                        if settings.autoMoney and (nameLow:find("money") or nameLow:find("bag") or nameLow:find("cash")) then
+                            shouldCollect = true
+                        end
+                        if shouldCollect and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                            local targetPos = obj:IsA("BasePart") and obj.Position or (obj.PrimaryPart and obj.PrimaryPart.Position) or nil
+                            if targetPos then
+                                LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+                                task.wait(0.1)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+local function bringItemsLoop()
+    task.spawn(function()
+        while settings.bringItems and task.wait(0.8) do
+            for _, obj in pairs(Workspace:GetDescendants()) do
+                if (obj:IsA("BasePart") or obj:IsA("Model")) and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    local nameLow = string.lower(obj.Name)
+                    if nameLow:find("chest") or nameLow:find("item") or nameLow:find("drop") or nameLow:find("supply") then
+                        local targetCFrame = obj:IsA("BasePart") and obj.CFrame or (obj.PrimaryPart and obj.PrimaryPart.CFrame) or nil
+                        if targetCFrame then
+                            obj.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 1, 0)
+                            task.wait(0.1)
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+local function applySpeed(speed)
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = speed
+    end
+    LocalPlayer.CharacterAdded:Connect(function(char)
+        task.wait(0.5)
+        char:FindFirstChild("Humanoid").WalkSpeed = speed
+    end)
+end
+
+-- ========== XÂY DỰNG GIAO DIỆN (CHỈ TÍNH NĂNG DEAD RAILS) ==========
+addSection("📡 ESP & MONSTER")
+addToggle("ESP (Name + Color)", function(val) settings.esp = val; updateESP() end)
+addToggle("Monster Detected", function(val) settings.monsterDetect = val; if val then monsterDetectLoop() end end)
+
+addSection("🎒 AUTO COLLECT")
+addToggle("Auto Collect Bonds", function(val) settings.autoBonds = val; autoCollectLoop() end)
+addToggle("Auto Collect Money Bag", function(val) settings.autoMoney = val; autoCollectLoop() end)
+addToggle("Bring Choosing Items", function(val) settings.bringItems = val; if val then bringItemsLoop() end end)
+
+addSection("⚡ MOVEMENT")
+addSlider("Set Speed", 16, 120, 16, function(val) settings.walkSpeed = val; applySpeed(val) end)
+
+-- Cập nhật Canvas
+uiList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, uiList.AbsoluteContentSize.Y + 15)
+end)
+
+-- Thu nhỏ / Mở rộng
+closeBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    minimizeButton.Visible = true
+end)
+minimizeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    minimizeButton.Visible = false
+end)
+
+-- Khởi chạy
+applySpeed(16)
+autoCollectLoop()
+monsterDetectLoop()
+bringItemsLoop()
+
+print("🌀 Tornado Hub for Dead Rails loaded! (Redz Hub style only)")
