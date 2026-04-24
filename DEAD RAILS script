@@ -1,5 +1,5 @@
 -- Tornado Hub for Dead Rails (Xeno Executor)
--- Danh sách vật phẩm đã được cập nhật theo game thực tế
+-- Bring Items = Teleport items to player
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -13,7 +13,7 @@ screenGui.ResetOnSpawn = false
 if syn and syn.protect_gui then syn.protect_gui(screenGui) end
 if gethui then screenGui.Parent = gethui() else screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
 
--- NÚT THU NHỎ
+-- NÚT THU NHỎ HÌNH TRÒN LỐC XOÁY
 local minimizeButton = Instance.new("ImageButton")
 minimizeButton.Name = "MinimizeButton"
 minimizeButton.Size = UDim2.new(0, 55, 0, 55)
@@ -30,11 +30,11 @@ minimizeButton.Parent = screenGui
 local minimizeCorner = Instance.new("UICorner", minimizeButton)
 minimizeCorner.CornerRadius = UDim.new(1, 0)
 
--- FRAME CHÍNH
+-- FRAME CHÍNH (PHONG CÁCH REDZ HUB)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 480, 0, 560)
-mainFrame.Position = UDim2.new(0.5, -240, 0.5, -280)
+mainFrame.Size = UDim2.new(0, 500, 0, 580)
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -290)
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
 mainFrame.BackgroundTransparency = 0.08
 mainFrame.BorderSizePixel = 0
@@ -226,94 +226,84 @@ local function addSlider(text, minVal, maxVal, defaultVal, callback)
     end)
 end
 
--- ========== DANH SÁCH VẬT PHẨM DEAD RAILS THỰC TẾ ==========
--- Dựa trên wiki và guide của game [citation:2][citation:3][citation:7]
-
+-- ========== DANH SÁCH VẬT PHẨM DEAD RAILS ==========
 local itemList = {
-    -- 💰 Vật phẩm bán lấy tiền (Loot for Sale)
-    {name = "Gold Bar", category = "💰 Valuable"},
-    {name = "Silver Bar", category = "💰 Valuable"},
-    {name = "Bonds", category = "💰 Valuable"},
-    {name = "Vase", category = "💰 Valuable"},
-    {name = "Cup", category = "💰 Valuable"},
-    {name = "Treasure", category = "💰 Valuable"},
-    
-    -- 💊 Vật phẩm hồi phục (Healing)
-    {name = "Bandage", category = "💊 Healing"},
-    {name = "Medkit", category = "💊 Healing"},
-    {name = "Snake Oil", category = "💊 Healing"},
-    {name = "Dr Rico's Cure", category = "💊 Healing"},
-    
-    -- 🔫 Vũ khí (Weapons) [citation:9]
-    {name = "Revolver", category = "🔫 Weapon"},
-    {name = "Shotgun", category = "🔫 Weapon"},
-    {name = "Rifle", category = "🔫 Weapon"},
-    {name = "Mauser C96", category = "🔫 Weapon"},
-    {name = "Sawed-Off Shotgun", category = "🔫 Weapon"},
-    {name = "Maxim Machine Gun", category = "🔫 Weapon"},
-    {name = "Dynamite", category = "🔫 Weapon"},
-    {name = "Grenade", category = "🔫 Weapon"},
-    {name = "Axe", category = "🔫 Weapon"},
-    {name = "Hammer", category = "🔫 Weapon"},
-    {name = "Pickaxe", category = "🔫 Weapon"},
-    {name = "Shovel", category = "🔫 Weapon"},
-    {name = "Vampire Knife", category = "🔫 Weapon"},
-    {name = "Turret", category = "🔫 Weapon"},
-    
-    -- 📦 Đạn dược (Ammo)
-    {name = "Ammo", category = "📦 Ammo"},
-    {name = "Revolver Ammo", category = "📦 Ammo"},
-    {name = "Shotgun Shells", category = "📦 Ammo"},
-    {name = "Rifle Ammo", category = "📦 Ammo"},
-    
-    -- ⛽ Tài nguyên (Resources) [citation:4][citation:5]
-    {name = "Coal", category = "⛽ Fuel"},
-    {name = "Newspaper", category = "⛽ Fuel"},
-    {name = "Zombie Corpse", category = "⛽ Fuel"},
-    {name = "Werewolf Corpse", category = "⛽ Fuel"},
-    {name = "Vampire Corpse", category = "⛽ Fuel"},
-    
-    -- 🛠️ Vật phẩm công cụ (Tools)
-    {name = "Metal Sheet", category = "🛠️ Tool"},
-    {name = "Steel Plate", category = "🛠️ Tool"},
-    {name = "Barbed Wire", category = "🛠️ Tool"},
-    {name = "Flashlight", category = "🛠️ Tool"},
-    {name = "Camera", category = "🛠️ Tool"},
-    {name = "Torch", category = "🛠️ Tool"},
-    {name = "Crucifix", category = "🛠️ Tool"},
-    
-    -- 🎁 Loot đặc biệt
-    {name = "Safe Code", category = "🎁 Special"},
-    {name = "Key", category = "🎁 Special"},
+    -- 💰 Valuable
+    "Gold Bar", "Silver Bar", "Bonds", "Vase", "Cup", "Treasure",
+    -- 💊 Healing
+    "Bandage", "Medkit", "Snake Oil", "Dr Rico's Cure",
+    -- 🔫 Weapons
+    "Revolver", "Shotgun", "Rifle", "Mauser C96", "Sawed-Off Shotgun", 
+    "Maxim Machine Gun", "Dynamite", "Grenade", "Axe", "Hammer", 
+    "Pickaxe", "Shovel", "Vampire Knife", "Turret",
+    -- 📦 Ammo
+    "Ammo", "Revolver Ammo", "Shotgun Shells", "Rifle Ammo",
+    -- ⛽ Fuel
+    "Coal", "Newspaper", "Zombie Corpse", "Werewolf Corpse", "Vampire Corpse",
+    -- 🛠️ Tools
+    "Metal Sheet", "Steel Plate", "Barbed Wire", "Flashlight", 
+    "Camera", "Torch", "Crucifix",
+    -- 🎁 Special
+    "Safe Code", "Key"
 }
 
 local selectedItems = {}
 for _, item in ipairs(itemList) do
-    selectedItems[item.name] = false
+    selectedItems[item] = false
 end
 
--- Hàm tạo danh sách chọn theo category
+-- Hàm "Check All" / "Uncheck All"
 local function addItemSelectionList()
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 200)
+    container.Size = UDim2.new(1, 0, 0, 220)
     container.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
     container.BackgroundTransparency = 0.4
     container.Parent = scrollFrame
     local containerCorner = Instance.new("UICorner", container)
     containerCorner.CornerRadius = UDim.new(0, 8)
     
+    local titleBarFrame = Instance.new("Frame")
+    titleBarFrame.Size = UDim2.new(1, 0, 0, 30)
+    titleBarFrame.BackgroundTransparency = 1
+    titleBarFrame.Parent = container
+    
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, 0, 0, 25)
+    titleLabel.Size = UDim2.new(0.6, 0, 1, 0)
     titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = "📦 Chọn vật phẩm muốn Bring (Dead Rails)"
+    titleLabel.Text = "📦 Chọn vật phẩm muốn Bring"
     titleLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
     titleLabel.TextSize = 13
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.Parent = container
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = titleBarFrame
+    
+    local checkAllBtn = Instance.new("TextButton")
+    checkAllBtn.Size = UDim2.new(0, 80, 0, 24)
+    checkAllBtn.Position = UDim2.new(0.7, 0, 0, 3)
+    checkAllBtn.BackgroundColor3 = Color3.fromRGB(80, 70, 110)
+    checkAllBtn.Text = "✓ Check All"
+    checkAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    checkAllBtn.TextSize = 11
+    checkAllBtn.Font = Enum.Font.Gotham
+    checkAllBtn.Parent = titleBarFrame
+    local checkAllCorner = Instance.new("UICorner", checkAllBtn)
+    checkAllCorner.CornerRadius = UDim.new(0, 4)
+    
+    local uncheckAllBtn = Instance.new("TextButton")
+    uncheckAllBtn.Size = UDim2.new(0, 80, 0, 24)
+    uncheckAllBtn.Position = UDim2.new(0.85, 0, 0, 3)
+    uncheckAllBtn.BackgroundColor3 = Color3.fromRGB(80, 70, 110)
+    uncheckAllBtn.Text = "✕ Uncheck"
+    uncheckAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    uncheckAllBtn.TextSize = 11
+    uncheckAllBtn.Font = Enum.Font.Gotham
+    uncheckAllBtn.Parent = titleBarFrame
+    local uncheckCorner = Instance.new("UICorner", uncheckAllBtn)
+    uncheckCorner.CornerRadius = UDim.new(0, 4)
     
     local itemScroll = Instance.new("ScrollingFrame")
-    itemScroll.Size = UDim2.new(1, -10, 1, -35)
-    itemScroll.Position = UDim2.new(0, 5, 0, 30)
+    itemScroll.Size = UDim2.new(1, -10, 1, -40)
+    itemScroll.Position = UDim2.new(0, 5, 0, 35)
     itemScroll.BackgroundTransparency = 1
     itemScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     itemScroll.ScrollBarThickness = 4
@@ -325,70 +315,68 @@ local function addItemSelectionList()
     itemListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     itemListLayout.Parent = itemScroll
     
-    -- Nhóm theo category
-    local categories = {}
-    for _, item in ipairs(itemList) do
-        if not categories[item.category] then
-            categories[item.category] = {}
-        end
-        table.insert(categories[item.category], item)
+    local checkboxes = {}
+    
+    for _, itemName in ipairs(itemList) do
+        local itemFrame = Instance.new("Frame")
+        itemFrame.Size = UDim2.new(0, 160, 0, 24)
+        itemFrame.BackgroundTransparency = 1
+        itemFrame.Parent = itemScroll
+        
+        local itemBtn = Instance.new("TextButton")
+        itemBtn.Size = UDim2.new(0, 20, 0, 20)
+        itemBtn.Position = UDim2.new(0, 5, 0, 2)
+        itemBtn.BackgroundColor3 = Color3.fromRGB(65, 60, 85)
+        itemBtn.Text = ""
+        itemBtn.Parent = itemFrame
+        local itemBtnCorner = Instance.new("UICorner", itemBtn)
+        itemBtnCorner.CornerRadius = UDim.new(0, 4)
+        
+        local itemCheck = Instance.new("TextLabel")
+        itemCheck.Size = UDim2.new(1, 0, 1, 0)
+        itemCheck.BackgroundTransparency = 1
+        itemCheck.Text = "✓"
+        itemCheck.TextColor3 = Color3.fromRGB(100, 255, 130)
+        itemCheck.TextSize = 14
+        itemCheck.Visible = false
+        itemCheck.Parent = itemBtn
+        
+        local itemLabel = Instance.new("TextLabel")
+        itemLabel.Size = UDim2.new(1, -35, 1, 0)
+        itemLabel.Position = UDim2.new(0, 32, 0, 0)
+        itemLabel.BackgroundTransparency = 1
+        itemLabel.Text = itemName
+        itemLabel.TextColor3 = Color3.fromRGB(220, 220, 245)
+        itemLabel.TextSize = 12
+        itemLabel.Font = Enum.Font.Gotham
+        itemLabel.TextXAlignment = Enum.TextXAlignment.Left
+        itemLabel.Parent = itemFrame
+        
+        checkboxes[itemName] = {btn = itemBtn, check = itemCheck, frame = itemFrame}
+        
+        itemBtn.MouseButton1Click:Connect(function()
+            selectedItems[itemName] = not selectedItems[itemName]
+            itemCheck.Visible = selectedItems[itemName]
+        end)
     end
     
-    for catName, catItems in pairs(categories) do
-        local catLabel = Instance.new("TextLabel")
-        catLabel.Size = UDim2.new(1, 0, 0, 20)
-        catLabel.BackgroundColor3 = Color3.fromRGB(50, 45, 70)
-        catLabel.BackgroundTransparency = 0.5
-        catLabel.Text = "  " .. catName
-        catLabel.TextColor3 = Color3.fromRGB(255, 180, 80)
-        catLabel.TextSize = 12
-        catLabel.Font = Enum.Font.GothamBold
-        catLabel.TextXAlignment = Enum.TextXAlignment.Left
-        catLabel.Parent = itemScroll
-        local catCorner = Instance.new("UICorner", catLabel)
-        catCorner.CornerRadius = UDim.new(0, 4)
-        
-        for _, itemData in ipairs(catItems) do
-            local itemFrame = Instance.new("Frame")
-            itemFrame.Size = UDim2.new(0, 160, 0, 24)
-            itemFrame.BackgroundTransparency = 1
-            itemFrame.Parent = itemScroll
-            
-            local itemBtn = Instance.new("TextButton")
-            itemBtn.Size = UDim2.new(0, 20, 0, 20)
-            itemBtn.Position = UDim2.new(0, 5, 0, 2)
-            itemBtn.BackgroundColor3 = Color3.fromRGB(65, 60, 85)
-            itemBtn.Text = ""
-            itemBtn.Parent = itemFrame
-            local itemBtnCorner = Instance.new("UICorner", itemBtn)
-            itemBtnCorner.CornerRadius = UDim.new(0, 4)
-            
-            local itemCheck = Instance.new("TextLabel")
-            itemCheck.Size = UDim2.new(1, 0, 1, 0)
-            itemCheck.BackgroundTransparency = 1
-            itemCheck.Text = "✓"
-            itemCheck.TextColor3 = Color3.fromRGB(100, 255, 130)
-            itemCheck.TextSize = 14
-            itemCheck.Visible = false
-            itemCheck.Parent = itemBtn
-            
-            local itemLabel = Instance.new("TextLabel")
-            itemLabel.Size = UDim2.new(1, -35, 1, 0)
-            itemLabel.Position = UDim2.new(0, 32, 0, 0)
-            itemLabel.BackgroundTransparency = 1
-            itemLabel.Text = itemData.name
-            itemLabel.TextColor3 = Color3.fromRGB(220, 220, 245)
-            itemLabel.TextSize = 12
-            itemLabel.Font = Enum.Font.Gotham
-            itemLabel.TextXAlignment = Enum.TextXAlignment.Left
-            itemLabel.Parent = itemFrame
-            
-            itemBtn.MouseButton1Click:Connect(function()
-                selectedItems[itemData.name] = not selectedItems[itemData.name]
-                itemCheck.Visible = selectedItems[itemData.name]
-            end)
+    checkAllBtn.MouseButton1Click:Connect(function()
+        for _, itemName in ipairs(itemList) do
+            selectedItems[itemName] = true
+            if checkboxes[itemName] then
+                checkboxes[itemName].check.Visible = true
+            end
         end
-    end
+    end)
+    
+    uncheckAllBtn.MouseButton1Click:Connect(function()
+        for _, itemName in ipairs(itemList) do
+            selectedItems[itemName] = false
+            if checkboxes[itemName] then
+                checkboxes[itemName].check.Visible = false
+            end
+        end
+    end)
     
     itemListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         itemScroll.CanvasSize = UDim2.new(0, 0, 0, itemListLayout.AbsoluteContentSize.Y + 10)
@@ -400,8 +388,6 @@ local settings = {
     esp = false,
     monsterDetect = false,
     bringItems = false,
-    autoBonds = false,
-    autoMoney = false,
     autoCollectAll = false,
     walkSpeed = 16
 }
@@ -481,27 +467,14 @@ end
 
 local function autoCollectLoop()
     task.spawn(function()
-        while task.wait(0.5) do
-            if settings.autoCollectAll or settings.autoBonds or settings.autoMoney then
+        while settings.autoCollectAll and task.wait(0.5) do
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 for _, obj in pairs(Workspace:GetDescendants()) do
                     if obj:IsA("BasePart") or (obj:IsA("Model") and obj.PrimaryPart) then
-                        local nameLow = string.lower(obj.Name)
-                        local shouldCollect = false
-                        
-                        if settings.autoCollectAll then
-                            shouldCollect = true
-                        elseif settings.autoBonds and (nameLow:find("bond") or nameLow:find("token")) then
-                            shouldCollect = true
-                        elseif settings.autoMoney and (nameLow:find("gold") or nameLow:find("silver") or nameLow:find("bar") or nameLow:find("vase") or nameLow:find("cup") or nameLow:find("treasure")) then
-                            shouldCollect = true
-                        end
-                        
-                        if shouldCollect and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                            local targetPos = obj:IsA("BasePart") and obj.Position or (obj.PrimaryPart and obj.PrimaryPart.Position) or nil
-                            if targetPos then
-                                LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
-                                task.wait(0.1)
-                            end
+                        local targetPos = obj:IsA("BasePart") and obj.Position or (obj.PrimaryPart and obj.PrimaryPart.Position) or nil
+                        if targetPos then
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+                            task.wait(0.1)
                         end
                     end
                 end
@@ -510,31 +483,55 @@ local function autoCollectLoop()
     end)
 end
 
--- BRING ITEMS với danh sách vật phẩm Dead Rails thực tế
+-- ========== BRING ITEMS (DỊCH CHUYỂN VẬT PHẨM ĐẾN NGƯỜI CHƠI) ==========
 local function bringItemsLoop()
     task.spawn(function()
-        while settings.bringItems and task.wait(0.5) do
+        while settings.bringItems and task.wait(0.3) do
             local hasSelected = false
             for _, v in pairs(selectedItems) do
                 if v then hasSelected = true; break end
             end
-            if not hasSelected then task.wait(1) end
+            if not hasSelected then 
+                task.wait(1)
+            end
             
-            for _, obj in pairs(Workspace:GetDescendants()) do
-                if (obj:IsA("BasePart") or obj:IsA("Model")) and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    local objName = obj.Name
-                    local shouldBring = false
-                    for itemName, isSelected in pairs(selectedItems) do
-                        if isSelected and string.lower(objName):find(string.lower(itemName)) then
-                            shouldBring = true
-                            break
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local targetPosition = LocalPlayer.Character.HumanoidRootPart.Position
+                
+                for _, obj in pairs(Workspace:GetDescendants()) do
+                    -- Tìm vật phẩm (Model hoặc Part)
+                    if obj:IsA("Model") or obj:IsA("BasePart") then
+                        local objName = obj.Name
+                        local shouldBring = false
+                        
+                        for itemName, isSelected in pairs(selectedItems) do
+                            if isSelected and string.lower(objName):find(string.lower(itemName)) then
+                                shouldBring = true
+                                break
+                            end
                         end
-                    end
-                    if shouldBring then
-                        local targetCFrame = obj:IsA("BasePart") and obj.CFrame or (obj.PrimaryPart and obj.PrimaryPart.CFrame) or nil
-                        if targetCFrame then
-                            obj.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 1, 0)
-                            task.wait(0.1)
+                        
+                        if shouldBring then
+                            -- DỊCH CHUYỂN vật phẩm đến vị trí người chơi
+                            local success, err = pcall(function()
+                                if obj:IsA("BasePart") then
+                                    obj.CFrame = CFrame.new(targetPosition + Vector3.new(0, 2, 0))
+                                elseif obj:IsA("Model") and obj.PrimaryPart then
+                                    obj:SetPrimaryPartCFrame(CFrame.new(targetPosition + Vector3.new(0, 2, 0)))
+                                elseif obj:IsA("Model") then
+                                    -- Nếu không có PrimaryPart, tìm một part bất kỳ
+                                    for _, part in pairs(obj:GetChildren()) do
+                                        if part:IsA("BasePart") then
+                                            part.CFrame = CFrame.new(targetPosition + Vector3.new(0, 2, 0))
+                                            break
+                                        end
+                                    end
+                                end
+                            end)
+                            if not success then
+                                -- Bỏ qua lỗi
+                            end
+                            task.wait(0.05)
                         end
                     end
                 end
@@ -561,11 +558,9 @@ addToggle("ESP (Name + Color)", function(val) settings.esp = val; updateESP() en
 addToggle("Monster Detected", function(val) settings.monsterDetect = val; if val then monsterDetectLoop() end end)
 
 addSection("🎒 AUTO COLLECT")
-addToggle("Auto Collect All Loot", function(val) settings.autoCollectAll = val; autoCollectLoop() end)
-addToggle("Auto Collect Bonds/Token", function(val) settings.autoBonds = val; autoCollectLoop() end)
-addToggle("Auto Collect Valuables (Gold/Silver)", function(val) settings.autoMoney = val; autoCollectLoop() end)
+addToggle("Auto Collect All Loot (TP to item)", function(val) settings.autoCollectAll = val; if val then autoCollectLoop() end end)
 
-addSection("🔄 BRING ITEMS (Chọn vật phẩm)")
+addSection("🔄 BRING ITEMS (Dịch chuyển item đến bạn)")
 addItemSelectionList()
 addToggle("▶ Kích hoạt Bring Items", function(val) 
     settings.bringItems = val
@@ -592,7 +587,6 @@ end)
 
 -- Khởi chạy
 applySpeed(16)
-autoCollectLoop()
 monsterDetectLoop()
 
-print("🌀 Tornado Hub for Dead Rails loaded! (Updated with real in-game items)")
+print("🌀 Tornado Hub for Dead Rails loaded! (Bring = Teleport items to player)")
